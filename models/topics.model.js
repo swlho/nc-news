@@ -14,5 +14,23 @@ function selectTopics(){
     })
 }
 
+function selectArticles(id=null){
+    let sqlQueryStr = `SELECT * FROM articles`
+    const queryVals = []
 
-module.exports = {selectTopics, selectEndpoints}
+    if(id){
+        sqlQueryStr += ` WHERE article_id = $1`
+        queryVals.push(id)
+    }
+
+    return db.query(sqlQueryStr,queryVals)
+    .then((result)=>{
+		if (result.rows.length === 0) {
+			return Promise.reject({ status: 404, msg: "not found" });
+		}
+        return result.rows
+    })
+}
+
+
+module.exports = {selectTopics, selectEndpoints, selectArticles}
