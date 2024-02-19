@@ -1,4 +1,4 @@
-const {selectTopics, selectEndpoints } = require(`${__dirname}/../models/topics.model.js`)
+const {selectTopics, selectEndpoints, selectArticles } = require(`${__dirname}/../models/topics.model.js`)
 
 function getApi(request, response, next){
     selectEndpoints()
@@ -20,4 +20,15 @@ function getTopics(request, response, next) {
     })
 }
 
-module.exports = {getTopics, getApi}
+function getArticles(request, response, next){
+    const {id} = request.params
+    selectArticles(id)
+    .then((articles)=>{
+    response.status(200).send({articles})
+    })
+    .catch((err)=>{
+        next(err)
+    })
+}
+
+module.exports = {getTopics, getApi, getArticles}
