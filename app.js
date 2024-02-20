@@ -1,7 +1,7 @@
 const express = require("express")
 const {getApi} = require(`${__dirname}/controllers/api.controller.js`)
 const {getTopics} = require(`${__dirname}/controllers/topics.controller.js`)
-const {getArticles} = require(`${__dirname}/controllers/articles.controller.js`)
+const {getArticles, getArticlesById} = require(`${__dirname}/controllers/articles.controller.js`)
 const {handlePsqlErrors, handleCustomErrors, handleServerErrors, handleInvalidEndpoints} = require(`${__dirname}/error_controller/errors.controller.js`)
 
 const app = express()
@@ -12,7 +12,7 @@ app.get("/api/topics", getTopics)
 
 app.get("/api/articles", getArticles)
 
-app.get("/api/articles/:id", getArticles)
+app.get("/api/articles/:id", getArticlesById)
 
 app.use(handlePsqlErrors)
 

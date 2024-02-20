@@ -1,10 +1,9 @@
 const {
-	selectArticles,
+	selectArticles, selectArticlesById
 } = require(`${__dirname}/../models/articles.model.js`);
 
 function getArticles(request, response, next) {
-	const { id } = request.params;
-	selectArticles(id)
+	selectArticles()
 		.then((articles) => {
 			response.status(200).send({ articles });
 		})
@@ -13,4 +12,15 @@ function getArticles(request, response, next) {
 		});
 }
 
-module.exports = {getArticles}
+function getArticlesById(request, response, next) {
+	const { id } = request.params;
+	selectArticlesById(id)
+		.then((articles) => {
+			response.status(200).send({ articles });
+		})
+		.catch((err) => {
+			next(err);
+		});
+}
+
+module.exports = {getArticles, getArticlesById}
