@@ -60,6 +60,30 @@ describe("/api/topics", () => {
 });
 
 describe("/api/articles", () => {
+	describe("GET /api/articles", () => {
+		test("STATUS 200: Responds with an array of article objects sorted by date descending, each having the properties: author, title, article_id, topic, created_at, votes, article_img_url, comment_count BUT NOT having a body property", () => {
+			return request(app)
+				.get("/api/articles")
+				.expect(200)
+				.then(({ body: { articles } }) => {
+					expect(articles.length).toBe(13);
+					expect(articles).toBeSorted("created_at", { descending: true });
+					articles.forEach((article) => {
+						expect(article).toMatchObject({
+							author: expect.any(String),
+							title: expect.any(String),
+							article_id: expect.any(Number),
+							topic: expect.any(String),
+							created_at: expect.any(String),
+							votes: expect.any(Number),
+							article_img_url: expect.any(String),
+							comment_count: expect.any(Number),
+						});
+						expect(article).not.toHaveProperty("body");
+					});
+				});
+		});
+	});
 	describe("GET /api/articles/:article_id", () => {
 		test("STATUS 200: Responds with the requested article object by ID with the following properties: author, title, article_id, body, topic, created_at, votes, article_img_url", () => {
 			return request(app)
@@ -98,31 +122,69 @@ describe("/api/articles", () => {
 				});
 		});
 	});
-
-	describe("GET /api/articles", () => {
-		test("STATUS 200: Responds with an array of article objects sorted by date descending, each having the properties: author, title, article_id, topic, created_at, votes, article_img_url, comment_count BUT NOT having a body property", () => {
+	describe('GET /api/articles/:article_id/comments', () => { 
+		test('STATUS 200: Responds with an array of comments for the given article_id, sorted by most recent comment first', () => {
 			return request(app)
-				.get("/api/articles")
-				.expect(200)
-				.then(({ body: { articles } }) => {
-					expect(articles.length).toBe(13);
-					expect(articles).toBeSorted("created_at", { descending: true });
-					articles.forEach((article) => {
-						expect(article).toMatchObject({
-							author: expect.any(String),
-							title: expect.any(String),
-							article_id: expect.any(Number),
-							topic: expect.any(String),
-							created_at: expect.any(String),
-							votes: expect.any(Number),
-							article_img_url: expect.any(String),
-							comment_count: expect.any(Number),
-						});
-						expect(article).not.toHaveProperty("body");
-					});
-				});
-		});
-	});
+			.get("/api/articles/9/comments")
+			.expect(200)
+			.then(({body})=>{
+				const comments = body.comments
+				expect(comments).toBeSortedBy("created_at", {descending:true})
+				comments.forEach((comment)=>{
+					expect(comment).toMatchObject({
+						comment_id: expect.any(Number),
+						votes: expect.any(Number),
+						created_at: expect.any(String),
+						author: expect.any(String),
+						body: expect.any(String),
+						article_id:expect.any(Number)
+					})
+				})
+			})
+		})
+		test('STATUS 200: If the requested article only has one comment, returns the comment as an object', () => {
+			return request(app)
+			.get("/api/articles/6/comments")
+			.expect(200)
+			.then(({body})=>{
+				const comments = body.comments
+				expect(comments).toMatchObject({
+						body: "This is a bad article name",
+						votes: 1,
+						author: "butter_bridge",
+						article_id: 6,
+						created_at: expect.any(String)
+				})
+			})
+		})
+		test('STATUS 204: If the requested article_id has no associated comments, returns empty array', () => {
+			return request(app)
+			.get("/api/articles/13/comments")
+			.expect(200)
+			.then(({body})=>{
+				const comments = body.comments
+				expect(comments.length).toBe(0)
+				})
+			})
+		})
+		test('STATUS 400: Responds with error message if the requested article_id is of an invalid type', () => {
+			return request(app)
+			.get("/api/articles/forklift/comments")
+			.expect(400)
+			.then((response) => {
+				const error = response.body;
+				expect(error.msg).toBe("bad request");
+			});
+		})
+		test('STATUS 404: Responds with error message if the requested article_id is of a valid type but does not exist', () => {
+			return request(app)
+			.get("/api/articles/8800/comments")
+			.expect(404)
+			.then((response) => {
+				const error = response.body;
+				expect(error.msg).toBe("not found");
+			});
+		})
 });
 
 describe("/api/not_a_valid_endpoint", () => {

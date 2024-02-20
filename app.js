@@ -1,25 +1,36 @@
-const express = require("express")
-const {getApi} = require(`${__dirname}/controllers/api.controller.js`)
-const {getTopics} = require(`${__dirname}/controllers/topics.controller.js`)
-const {getArticles, getArticlesById} = require(`${__dirname}/controllers/articles.controller.js`)
-const {handlePsqlErrors, handleCustomErrors, handleServerErrors, handleInvalidEndpoints} = require(`${__dirname}/error_controller/errors.controller.js`)
+const express = require("express");
+const { getApi } = require(`${__dirname}/controllers/api.controller.js`);
+const { getTopics } = require(`${__dirname}/controllers/topics.controller.js`);
+const {
+	getArticles,
+	getArticlesById,
+	getCommentsByArticleId,
+} = require(`${__dirname}/controllers/articles.controller.js`);
+const {
+	handlePsqlErrors,
+	handleCustomErrors,
+	handleServerErrors,
+	handleInvalidEndpoints,
+} = require(`${__dirname}/error_controller/errors.controller.js`);
 
-const app = express()
+const app = express();
 
-app.get("/api", getApi)
+app.get("/api", getApi);
 
-app.get("/api/topics", getTopics)
+app.get("/api/topics", getTopics);
 
-app.get("/api/articles", getArticles)
+app.get("/api/articles", getArticles);
 
-app.get("/api/articles/:id", getArticlesById)
+app.get("/api/articles/:id", getArticlesById);
 
-app.use(handlePsqlErrors)
+app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
-app.use(handleCustomErrors)
+app.use(handlePsqlErrors);
 
-app.use(handleServerErrors)
+app.use(handleCustomErrors);
 
-app.all("/*",handleInvalidEndpoints)
+app.use(handleServerErrors);
 
-module.exports = app
+app.all("/*", handleInvalidEndpoints);
+
+module.exports = app;
