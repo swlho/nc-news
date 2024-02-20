@@ -63,9 +63,26 @@ function addCommentByArticleId(postBody,id){
     })
 }
 
+function updateArticleVotes(updateVotesValue, article_id){
+    const {inc_votes} = updateVotesValue
+    const queryVals = [inc_votes, article_id]
+
+    let sqlQueryStr = `
+    UPDATE articles
+    SET votes = votes + $1
+    WHERE article_id = $2
+    RETURNING *
+    `
+    return db.query(sqlQueryStr, queryVals)
+    .then(({rows})=>{
+        return rows[0]
+    })
+}
+
 module.exports = {
 	selectArticles,
 	selectArticlesById,
 	selectCommentsByArticleId,
-    addCommentByArticleId
+    addCommentByArticleId,
+    updateArticleVotes
 };

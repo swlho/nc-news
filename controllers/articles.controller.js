@@ -2,7 +2,8 @@ const {
 	selectArticles,
 	selectArticlesById,
 	selectCommentsByArticleId,
-	addCommentByArticleId
+	addCommentByArticleId,
+	updateArticleVotes
 } = require(`${__dirname}/../models/articles.model.js`);
 
 function getArticles(request, response, next) {
@@ -59,4 +60,16 @@ function postCommentsByArticleId(request, response, next){
 	})
 }
 
-module.exports = { getArticles, getArticlesById, getCommentsByArticleId, postCommentsByArticleId };
+function patchArticleById(request, response, next){
+	const {article_id} = request.params
+	const updateVotesValue = request.body
+	updateArticleVotes(updateVotesValue,article_id)
+	.then((patchedArticle)=>{
+		response.status(200).send({article:patchedArticle})
+	})
+	.catch((err)=>{
+		next(err)
+	})
+}
+
+module.exports = { getArticles, getArticlesById, getCommentsByArticleId, postCommentsByArticleId, patchArticleById };

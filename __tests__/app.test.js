@@ -220,7 +220,7 @@ describe("/api/articles", () => {
 					expect(response.body.msg).toBe("not found");
 				});
 		});
-		test("STATUS 400: sends an error if trying to post a comment with malformed data", () => { 
+		test("STATUS 400: sends an error if trying to post a comment with malformed data", () => {
 			const newComment = {
 				author: "butter_bridge",
 			};
@@ -231,8 +231,8 @@ describe("/api/articles", () => {
 				.then((response) => {
 					expect(response.body.msg).toBe("bad request");
 				});
-		})
-		test("STATUS 400: sends an error if trying to post a comment with data not meeting table scheme validation", () => { 
+		});
+		test("STATUS 400: sends an error if trying to post a comment with data not meeting table scheme validation", () => {
 			const newComment = {
 				body: null,
 				votes: 0,
@@ -241,6 +241,36 @@ describe("/api/articles", () => {
 			return request(app)
 				.post("/api/articles/3/comments")
 				.send(newComment)
+				.expect(400)
+				.then((response) => {
+					expect(response.body.msg).toBe("bad request");
+				});
+		});
+	});
+	describe("PATCH /api/articles/:article_id", () => {
+		test("STATUS 200: Updates a given article's votes by the value provided by newVote in the passed object {inc_votes: newVote}", () => {
+			return request(app)
+				.patch("/api/articles/1")
+				.send({ inc_votes: 100 })
+				.expect(200)
+				.then(({ body }) => {
+					expect(body.article).toEqual({
+						article_id: 1,
+						title: "Living in the shadow of a great man",
+						topic: "mitch",
+						author: "butter_bridge",
+						body: "I find this existence challenging",
+						created_at: expect.any(String),
+						votes: 200,
+						article_img_url:
+							"https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+					});
+				});
+		});
+		test('STATUS 400: sends an appropriate status and error message when given a PATCH body not meeting validation schema', () => {
+			return request(app)
+				.patch("/api/articles/1")
+				.send({ inc_votes: "one hundred" })
 				.expect(400)
 				.then((response) => {
 					expect(response.body.msg).toBe("bad request");
