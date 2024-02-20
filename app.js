@@ -1,5 +1,6 @@
 const express = require("express")
 const {getTopics, getApi, getArticles} = require(`${__dirname}/controllers/topics.controller.js`)
+const {handlePsqlErrors, handleCustomErrors, handleServerErrors, handleInvalidEndpoints} = require(`${__dirname}/controllers/errors.controller.js`)
 
 const app = express()
 
@@ -7,25 +8,16 @@ app.get("/api", getApi)
 
 app.get("/api/topics", getTopics)
 
+app.get("/api/articles", getArticles)
+
 app.get("/api/articles/:id", getArticles)
 
-app.use((err,request,response,next)=>{
-    if(err.code==='22P02'){
-      response.status(400).send({msg:'bad request'})
-    }
-    next(err)
-  })
+app.use(handlePsqlErrors)
 
-app.use((err, request, response, next) => {
-	if (err.status && err.msg) {
-		response.status(err.status).send({ msg: err.msg });
-	} else {
-		response.status(500).send({ msg: "Internal Server Error" });
-	}
-});
+app.use(handleCustomErrors)
 
-app.all("/*", (request, response)=>{
-    response.status(404).send({msg:"Not found"})
-})
+app.use(handleServerErrors)
+
+app.all("/*",handleInvalidEndpoints)
 
 module.exports = app
