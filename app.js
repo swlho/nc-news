@@ -5,6 +5,7 @@ const {
 	getArticles,
 	getArticlesById,
 	getCommentsByArticleId,
+    postCommentsByArticleId
 } = require(`${__dirname}/controllers/articles.controller.js`);
 const {
 	handlePsqlErrors,
@@ -14,6 +15,7 @@ const {
 } = require(`${__dirname}/error_controller/errors.controller.js`);
 
 const app = express();
+app.use(express.json())
 
 app.get("/api", getApi);
 
@@ -24,6 +26,8 @@ app.get("/api/articles", getArticles);
 app.get("/api/articles/:id", getArticlesById);
 
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
+
+app.post("/api/articles/:article_id/comments", postCommentsByArticleId)
 
 app.use(handlePsqlErrors);
 

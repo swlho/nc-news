@@ -14,12 +14,12 @@ function selectArticles() {
 function selectArticlesById(id = null) {
 	let sqlQueryStr = ``;
 	const queryVals = [];
-
-	if (id) {
+	if(id) {
 		sqlQueryStr += `SELECT * FROM articles WHERE article_id = $1`;
 		queryVals.push(id);
 	}
-	return db.query(sqlQueryStr, queryVals).then((result) => {
+	return db.query(sqlQueryStr, queryVals)
+    .then((result) => {
 		if (result.rows.length === 0) {
 			return Promise.reject({ status: 404, msg: "not found" });
 		}
@@ -46,8 +46,26 @@ function selectCommentsByArticleId(id = null) {
 	});
 }
 
+function addCommentByArticleId(postBody,id){
+    const {body, votes, author} = postBody
+    let sqlQueryStr = `
+    INSERT INTO comments
+    (body, author, votes, article_id)
+    VALUES
+    ($1, $2, $3, $4)
+    RETURNING *
+    `
+    const queryVals = [body, author, votes, id]
+
+    return db.query(sqlQueryStr,queryVals)
+    .then(({rows})=>{
+        return rows[0]
+    })
+}
+
 module.exports = {
 	selectArticles,
 	selectArticlesById,
 	selectCommentsByArticleId,
+    addCommentByArticleId
 };

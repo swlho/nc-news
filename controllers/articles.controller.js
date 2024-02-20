@@ -2,6 +2,7 @@ const {
 	selectArticles,
 	selectArticlesById,
 	selectCommentsByArticleId,
+	addCommentByArticleId
 } = require(`${__dirname}/../models/articles.model.js`);
 
 function getArticles(request, response, next) {
@@ -42,4 +43,20 @@ function getCommentsByArticleId(request, response, next) {
 		});
 }
 
-module.exports = { getArticles, getArticlesById, getCommentsByArticleId };
+function postCommentsByArticleId(request, response, next){
+	const postBody = request.body
+	const { article_id } = request.params
+
+	selectArticlesById(article_id)
+	.then(()=>{
+		return addCommentByArticleId(postBody,article_id)
+	})
+	.then((postedComment)=>{
+		response.status(201).send({comment: postedComment})
+	})
+	.catch((err)=>{
+		next(err)
+	})
+}
+
+module.exports = { getArticles, getArticlesById, getCommentsByArticleId, postCommentsByArticleId };
