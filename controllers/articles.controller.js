@@ -26,9 +26,10 @@ function getArticles(request, response, next) {
 
 function getArticlesById(request, response, next) {
 	const { id } = request.params;
-	selectArticlesById(id)
-		.then((articles) => {
-			response.status(200).send({ articles });
+	const {comment_count} = request.query
+	selectArticlesById(id, comment_count)
+		.then((article) => {
+			response.status(200).send({ article });
 		})
 		.catch((err) => {
 			next(err);
@@ -79,9 +80,5 @@ function patchArticleById(request, response, next){
 		next(err)
 	})
 }
-
-// function getArticlesByTopic(){
-// 	selectArticlesByTopic()
-// }
 
 module.exports = { getArticles, getArticlesById, getCommentsByArticleId, postCommentsByArticleId, patchArticleById };

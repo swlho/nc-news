@@ -67,6 +67,17 @@
       ]
     }
   },
+  "GET /api/articles/:article_id?comments": {
+    "description": "query that serves a total count of all the comments with the requested article_id",
+    "queries": ["article_id"],
+    "exampleResponse":{
+      "article": [
+        {
+          "comment_count": 6
+        }
+      ]
+    }
+  },
   "POST /api/articles/:article_id/comments": {
     "description": "adds a comment for an article and responds to client with the added comment",
     "queries": ["article_id"],

@@ -17,13 +17,25 @@ function selectArticles(topic=null) {
 	});
 }
 
-function selectArticlesById(id = null) {
-	let sqlQueryStr = ``;
+function selectArticlesById(id = null, comment_count=null) {
 	const queryVals = [];
-	if(id) {
-		sqlQueryStr += `SELECT * FROM articles WHERE article_id = $1`;
+
+	let sqlQueryStr = ""
+
+	if(id && comment_count===null) {
+        sqlQueryStr = "SELECT articles.article_id, title, topic, articles.author, articles.body, articles.created_at, articles.votes, article_img_url, CAST(COUNT(comments.comment_id) AS INT) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id"
+		sqlQueryStr += " WHERE articles.article_id = $1"
 		queryVals.push(id);
 	}
+
+    if(id && typeof comment_count ==="string"){
+        sqlQueryStr = "SELECT CAST(COUNT(comments.comment_id) AS INT) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id"
+		sqlQueryStr += " WHERE articles.article_id = $1"
+		queryVals.push(id);
+    }
+    
+    sqlQueryStr += " GROUP BY articles.article_id ORDER BY articles.created_at DESC"
+    
 	return db.query(sqlQueryStr, queryVals)
     .then((result) => {
 		if (result.rows.length === 0) {
@@ -84,10 +96,6 @@ function updateArticleVotes(updateVotesValue, article_id){
         return rows[0]
     })
 }
-
-// function selectArticlesByTopic(){
-//     console.log("here")
-// }
 
 module.exports = {
 	selectArticles,

@@ -36,6 +36,8 @@ app.get("/api/articles?topic", getArticles)
 
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
+app.get("/api/articles/:article_id/?comment_count", getArticlesById)
+
 app.post("/api/articles/:article_id/comments", postCommentsByArticleId)
 
 app.patch("/api/articles/:article_id", patchArticleById)

@@ -89,7 +89,7 @@ describe("/api/articles", () => {
 				.get("/api/articles/1")
 				.expect(200)
 				.then(({ body }) => {
-					expect(body.articles).toMatchObject({
+					expect(body.article).toMatchObject({
 						article_id: 1,
 						title: "Living in the shadow of a great man",
 						topic: "mitch",
@@ -124,66 +124,107 @@ describe("/api/articles", () => {
 	describe("GET /api/articles/:article_id/comments", () => {
 		test("STATUS 200: Responds with an array of comments for the given article_id, sorted by most recent comment first", () => {
 			return request(app)
-				.get("/api/articles/9/comments")
-				.expect(200)
-				.then(({ body }) => {
-					const comments = body.comments;
-					expect(comments).toBeSortedBy("created_at", { descending: true });
-					comments.forEach((comment) => {
-						expect(comment).toMatchObject({
-							comment_id: expect.any(Number),
-							votes: expect.any(Number),
-							created_at: expect.any(String),
-							author: expect.any(String),
-							body: expect.any(String),
-							article_id: expect.any(Number),
-						});
+			.get("/api/articles/9/comments")
+			.expect(200)
+			.then(({ body }) => {
+				const comments = body.comments;
+				expect(comments).toBeSortedBy("created_at", { descending: true });
+				comments.forEach((comment) => {
+					expect(comment).toMatchObject({
+						comment_id: expect.any(Number),
+						votes: expect.any(Number),
+						created_at: expect.any(String),
+						author: expect.any(String),
+						body: expect.any(String),
+						article_id: expect.any(Number),
 					});
 				});
+			});
 		});
 		test("STATUS 200: If the requested article only has one comment, returns the comment as an object", () => {
 			return request(app)
-				.get("/api/articles/6/comments")
-				.expect(200)
-				.then(({ body }) => {
-					const comments = body.comments;
-					expect(comments).toMatchObject({
-						body: "This is a bad article name",
-						votes: 1,
-						author: "butter_bridge",
-						article_id: 6,
-						created_at: expect.any(String),
-					});
+			.get("/api/articles/6/comments")
+			.expect(200)
+			.then(({ body }) => {
+				const comments = body.comments;
+				expect(comments).toMatchObject({
+					body: "This is a bad article name",
+					votes: 1,
+					author: "butter_bridge",
+					article_id: 6,
+					created_at: expect.any(String),
 				});
+			});
 		});
 		test("STATUS 200: If the requested article_id has no associated comments, returns empty array", () => {
 			return request(app)
-				.get("/api/articles/13/comments")
-				.expect(200)
-				.then(({ body }) => {
-					const comments = body.comments;
-					expect(comments.length).toBe(0);
-				});
+			.get("/api/articles/13/comments")
+			.expect(200)
+			.then(({ body }) => {
+				const comments = body.comments;
+				expect(comments.length).toBe(0);
+			});
 		});
 		test("STATUS 400: Responds with error message if the requested article_id is of an invalid type", () => {
 			return request(app)
-				.get("/api/articles/forklift/comments")
-				.expect(400)
-				.then((response) => {
-					const error = response.body;
-					expect(error.msg).toBe("bad request");
-				});
+			.get("/api/articles/forklift/comments")
+			.expect(400)
+			.then((response) => {
+				const error = response.body;
+				expect(error.msg).toBe("bad request");
+			});
 		});
 		test("STATUS 404: Responds with error message if the requested article_id is of a valid type but does not exist", () => {
 			return request(app)
-				.get("/api/articles/8800/comments")
+			.get("/api/articles/8800/comments")
+			.expect(404)
+			.then((response) => {
+				const error = response.body;
+				expect(error.msg).toBe("not found");
+			});
+		});
+	});
+	describe('GET /api/articles/:article_id?comment_count', () => {
+		test("STATUS 200: Responds with article's comment_count, which is the total count of all the comments with this article_id", () => {
+			return request(app)
+			.get("/api/articles/9?comment_count")
+			.expect(200)
+			.then(({ body }) => {
+				const article = body.article;
+				expect(article).toMatchObject({
+					comment_count: expect.any(Number)
+				})
+				expect(article.comment_count).toBe(2)
+			})
+		})
+		test("STATUS 200: If requested article_id has no comments associated with it, responds with comment_count of 0", () => {
+			return request(app)
+			.get("/api/articles/2?comment_count")
+			.expect(200)
+			.then(({ body }) => {
+				const article = body.article;
+				expect(article.comment_count).toBe(0)
+			})
+		})
+		test("STATUS 400: Responds with an error and appropriate error message if requesting an ID of an invalid datatype (e.g. string)", () => {
+			return request(app)
+			.get("/api/articles/forklift?comment_count")
+			.expect(400)
+			.then((response) => {
+				const error = response.body;
+				expect(error.msg).toBe("bad request");
+			});
+		})
+		test("STATUS 404: Responds with an error and appropriate error message if requesting an ID of a valid datatype (number) but does not exist", () => {
+			return request(app)
+				.get("/api/articles/99?comment_count")
 				.expect(404)
 				.then((response) => {
 					const error = response.body;
 					expect(error.msg).toBe("not found");
 				});
 		});
-	});
+	})
 	describe('GET /api/articles?topic', () => { 
 		test('STATUS 200: Responds with articles filtered by the topic value specified in the query', () => {
 			return request(app)
@@ -224,7 +265,7 @@ describe("/api/articles", () => {
 				expect(error.msg).toBe("not found");
 			});
 		})
-	 })
+	})
 	describe("POST /api/articles/:article_id/comments", () => {
 		test("STATUS 201: adds a comment for an article and responds to client with the added comment", () => {
 			const newComment = {
