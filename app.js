@@ -12,6 +12,9 @@ const {
     deleteCommentById
 } = require(`${__dirname}/controllers/comments.controller.js`);
 const {
+    getUsers
+} = require(`${__dirname}/controllers/users.controller.js`);
+const {
 	handlePsqlErrors,
 	handleCustomErrors,
 	handleServerErrors,
@@ -36,6 +39,8 @@ app.post("/api/articles/:article_id/comments", postCommentsByArticleId)
 app.patch("/api/articles/:article_id", patchArticleById)
 
 app.delete("/api/comments/:comment_id", deleteCommentById)
+
+app.get("/api/users", getUsers)
 
 app.use(handlePsqlErrors);
 
