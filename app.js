@@ -32,6 +32,8 @@ app.get("/api/articles", getArticles);
 
 app.get("/api/articles/:id", getArticlesById);
 
+app.get("/api/articles?topic", getArticles)
+
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
 app.post("/api/articles/:article_id/comments", postCommentsByArticleId)

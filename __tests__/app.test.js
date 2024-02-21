@@ -184,6 +184,47 @@ describe("/api/articles", () => {
 				});
 		});
 	});
+	describe('GET /api/articles?topic', () => { 
+		test('STATUS 200: Responds with articles filtered by the topic value specified in the query', () => {
+			return request(app)
+			.get("/api/articles?topic=mitch")
+			.expect(200)
+			.then(({body}) => {
+				const articles = body.articles
+				expect(articles.length).toBe(12)
+				articles.forEach((article)=>{
+					expect(article.topic).toBe("mitch")
+				})
+			});
+		})
+		test('STATUS 200: Responds with all articles if the topic query is omitted', () => {
+			return request(app)
+			.get("/api/articles")
+			.expect(200)
+			.then(({body}) => {
+				const articles = body.articles
+				expect(articles.length).toBe(13)
+			});
+		})
+		test('STATUS 200: Responds with an empty array if articles have no associated valid topic', () => {
+			return request(app)
+			.get("/api/articles?topic=paper")
+			.expect(200)
+			.then(({body}) => {
+				const articles = body.articles;
+				expect(articles.length).toBe(0);
+			});
+		})
+		test('STATUS 404: Responds with an error if queried topic does not exist', () => {
+			return request(app)
+			.get("/api/articles?topic=forklift")
+			.expect(404)
+			.then((response) => {
+				const error = response.body;
+				expect(error.msg).toBe("not found");
+			});
+		})
+	 })
 	describe("POST /api/articles/:article_id/comments", () => {
 		test("STATUS 201: adds a comment for an article and responds to client with the added comment", () => {
 			const newComment = {

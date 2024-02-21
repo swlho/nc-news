@@ -1,12 +1,18 @@
 const db = require(`${__dirname}/../db/connection.js`);
 
-function selectArticles() {
-	const sqlQueryStr = `SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, CAST(COUNT(comments.comment_id) AS INT) AS comment_count FROM articles
-        LEFT JOIN comments ON articles.article_id = comments.article_id
-        GROUP BY articles.article_id
-        ORDER BY articles.created_at DESC;
-        `;
-	return db.query(sqlQueryStr).then((result) => {
+function selectArticles(topic=null) {
+    const queryVals = []
+
+	let sqlQueryStr = "SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, CAST(COUNT(comments.comment_id) AS INT) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id"
+
+    if(topic){
+        sqlQueryStr += " WHERE topic = $1"
+        queryVals.push(`${topic}`)
+    }
+    
+    sqlQueryStr += " GROUP BY articles.article_id ORDER BY articles.created_at DESC"
+
+	return db.query(sqlQueryStr, queryVals).then((result) => {
 		return result.rows;
 	});
 }
@@ -78,6 +84,10 @@ function updateArticleVotes(updateVotesValue, article_id){
         return rows[0]
     })
 }
+
+// function selectArticlesByTopic(){
+//     console.log("here")
+// }
 
 module.exports = {
 	selectArticles,
