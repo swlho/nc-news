@@ -4,7 +4,6 @@ const data = require(`${__dirname}/../db/data/test-data/index.js`);
 const app = require(`${__dirname}/../app.js`);
 const request = require("supertest");
 const jest_sorted = require("jest-sorted");
-// const snapshotJSONData = require(`${__dirname}/../endpoints.json`)
 
 beforeEach(() => {
 	return seed(data);
@@ -21,9 +20,9 @@ describe("/api", () => {
 				.get("/api")
 				.expect(200)
 				.then((response) => {
-					const endpointKeys = Object.keys(response.body[0]);
+					const endpointKeys = Object.keys(response.body);
 					expect(typeof response.body).toBe("object");
-					for (const [key, value] of Object.entries(response.body[0])) {
+					for (const [key, value] of Object.entries(response.body)) {
 						expect(endpointKeys.includes(key)).toBe(true);
 						expect(typeof value).toBe("object");
 						expect(value).toHaveProperty("description");
@@ -278,6 +277,34 @@ describe("/api/articles", () => {
 		})
 	});
 });
+
+describe('/api/comments', () => {
+	describe('DELETE /api/comments/:comment_id', () => { 
+		test('STATUS 204: Deletes comment by comment_id', () => {
+			return request(app)
+			.delete("/api/comments/1")
+			.expect(204)
+		})
+		test('STATUS 404: Responds with error if no such comment_id exists', () => {
+			return request(app)
+			.delete("/api/comments/899456")
+			.expect(404)
+			.then((response) => {
+				const error = response.body;
+				expect(error.msg).toBe("not found");
+			});
+		})
+		test('STATUS 400: Responds with error if comment_id is invalid datatype', () => {
+			return request(app)
+			.delete("/api/comments/forklift")
+			.expect(400)
+			.then((response) => {
+				const error = response.body;
+				expect(error.msg).toBe("bad request");
+			});
+		})
+	})
+})
 
 describe("/api/not_a_valid_endpoint", () => {
 	describe("GET /api/not_a_valid_endpoint", () => {

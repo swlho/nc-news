@@ -9,6 +9,9 @@ const {
     patchArticleById
 } = require(`${__dirname}/controllers/articles.controller.js`);
 const {
+    deleteCommentById
+} = require(`${__dirname}/controllers/comments.controller.js`);
+const {
 	handlePsqlErrors,
 	handleCustomErrors,
 	handleServerErrors,
@@ -31,6 +34,8 @@ app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 app.post("/api/articles/:article_id/comments", postCommentsByArticleId)
 
 app.patch("/api/articles/:article_id", patchArticleById)
+
+app.delete("/api/comments/:comment_id", deleteCommentById)
 
 app.use(handlePsqlErrors);
 
