@@ -1,3 +1,5 @@
+const { selectTopics } = require("../models/topics.model");
+
 const {
 	selectArticles,
 	selectArticlesById,
@@ -7,9 +9,15 @@ const {
 } = require(`${__dirname}/../models/articles.model.js`);
 
 function getArticles(request, response, next) {
-	selectArticles()
-		.then((articles) => {
-			response.status(200).send({ articles });
+	const {topic} = request.query
+	const promises = [selectArticles(topic)]
+
+	if(topic){
+		promises.push(selectTopics(topic))
+	}
+	Promise.all(promises)
+		.then((resolvedPromises) => {
+			response.status(200).send({ articles: resolvedPromises[0] });
 		})
 		.catch((err) => {
 			next(err);
@@ -71,5 +79,9 @@ function patchArticleById(request, response, next){
 		next(err)
 	})
 }
+
+// function getArticlesByTopic(){
+// 	selectArticlesByTopic()
+// }
 
 module.exports = { getArticles, getArticlesById, getCommentsByArticleId, postCommentsByArticleId, patchArticleById };

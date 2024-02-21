@@ -1,11 +1,20 @@
 const db = require(`${__dirname}/../db/connection.js`)
 
-function selectTopics(){
-    const sqlQueryStr = `SELECT * FROM topics;`
+function selectTopics(topic=null){
+    const queryVals = []
+    let sqlQueryStr = "SELECT * FROM topics"
 
-    return db.query(sqlQueryStr)
+    if(topic){
+        sqlQueryStr += " WHERE slug = $1"
+        queryVals.push(`${topic}`)
+    }
+
+    return db.query(sqlQueryStr, queryVals)
     .then((result)=>{
-        return result.rows;
+        if (result.rows.length === 0) {
+			return Promise.reject({ status: 404, msg: "not found" });
+		}
+		return result.rows;
     })
 }
 

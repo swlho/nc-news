@@ -4,7 +4,7 @@ const {
 } = require(`${__dirname}/../models/topics.model.js`);
 
 function getTopics(request, response, next) {
-	selectTopics(request)
+	selectTopics()
 		.then((topics) => {
 			response.status(200).send({ topics });
 		})
