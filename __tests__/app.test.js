@@ -128,6 +128,7 @@ describe("/api/articles", () => {
 			.expect(200)
 			.then(({ body }) => {
 				const comments = body.comments;
+				expect(comments.length).toBe(2)
 				expect(comments).toBeSortedBy("created_at", { descending: true });
 				comments.forEach((comment) => {
 					expect(comment).toMatchObject({
@@ -136,7 +137,7 @@ describe("/api/articles", () => {
 						created_at: expect.any(String),
 						author: expect.any(String),
 						body: expect.any(String),
-						article_id: expect.any(Number),
+						article_id: 9
 					});
 				});
 			});
