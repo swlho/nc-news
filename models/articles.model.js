@@ -17,25 +17,25 @@ function selectArticles(topic=null) {
 	});
 }
 
-function selectArticlesById(id = null, comment_count=null) {
+function selectArticlesById(id = null, queryField=null) {
 	const queryVals = [];
+    const validQueryFields = ['comment_count']
+
+    if(queryField && Object.keys(queryField).length !== 0){
+        if(!validQueryFields.includes(Object.keys(queryField)[0])){
+            return Promise.reject({ status: 400, msg: "bad request" });
+        }
+    }
 
 	let sqlQueryStr = ""
-
-	if(id && comment_count===null) {
+    
+	if(id) {
         sqlQueryStr = "SELECT articles.article_id, title, topic, articles.author, articles.body, articles.created_at, articles.votes, article_img_url, CAST(COUNT(comments.comment_id) AS INT) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id"
 		sqlQueryStr += " WHERE articles.article_id = $1"
 		queryVals.push(id);
 	}
-
-    if(id && typeof comment_count ==="string"){
-        sqlQueryStr = "SELECT CAST(COUNT(comments.comment_id) AS INT) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id"
-		sqlQueryStr += " WHERE articles.article_id = $1"
-		queryVals.push(id);
-    }
     
     sqlQueryStr += " GROUP BY articles.article_id ORDER BY articles.created_at DESC"
-    
 	return db.query(sqlQueryStr, queryVals)
     .then((result) => {
 		if (result.rows.length === 0) {

@@ -224,6 +224,15 @@ describe("/api/articles", () => {
 					expect(error.msg).toBe("not found");
 				});
 		});
+		test("STATUS 400: Responds with an error and appropriate error message if requesting a valid ID but the query is invalid", () => {
+			return request(app)
+				.get("/api/articles/1?comment_co")
+				.expect(400)
+				.then((response) => {
+					const error = response.body;
+					expect(error.msg).toBe("bad request");
+				});
+		});
 	})
 	describe('GET /api/articles?topic', () => { 
 		test('STATUS 200: Responds with articles filtered by the topic value specified in the query', () => {
