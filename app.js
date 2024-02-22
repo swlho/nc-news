@@ -34,6 +34,8 @@ app.get("/api/articles/:id", getArticlesById);
 
 app.get("/api/articles?topic", getArticles)
 
+app.get("/api/articles?sort_by=value&order=value", getArticles)
+
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
 app.get("/api/articles/:article_id/?comment_count", getArticlesById)
