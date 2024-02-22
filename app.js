@@ -1,19 +1,11 @@
 const express = require("express");
-const { getApi } = require(`${__dirname}/controllers/api.controller.js`);
-const { getTopics } = require(`${__dirname}/controllers/topics.controller.js`);
-const {
-	getArticles,
-	getArticlesById,
-	getCommentsByArticleId,
-    postCommentsByArticleId,
-    patchArticleById
-} = require(`${__dirname}/controllers/articles.controller.js`);
-const {
-    deleteCommentById
-} = require(`${__dirname}/controllers/comments.controller.js`);
-const {
-    getUsers
-} = require(`${__dirname}/controllers/users.controller.js`);
+const app = express();
+const apiRouter = require(`${__dirname}/./routes/api.router.js`);
+const topicsRouter = require(`${__dirname}/./routes/topics.router.js`);
+const articlesRouter = require(`${__dirname}/./routes/articles.router.js`);
+const commentsRouter = require(`${__dirname}/./routes/comments.router.js`);
+const usersRouter = require(`${__dirname}/./routes/users.router.js`);
+
 const {
 	handlePsqlErrors,
 	handleCustomErrors,
@@ -21,32 +13,17 @@ const {
 	handleInvalidEndpoints,
 } = require(`${__dirname}/error_controller/errors.controller.js`);
 
-const app = express();
 app.use(express.json())
 
-app.get("/api", getApi);
+app.use("/api", apiRouter);
 
-app.get("/api/topics", getTopics);
+app.use("/api/topics", topicsRouter);
 
-app.get("/api/articles", getArticles);
+app.use("/api/articles", articlesRouter);
 
-app.get("/api/articles/:id", getArticlesById);
+app.use("/api/comments", commentsRouter)
 
-app.get("/api/articles?topic", getArticles)
-
-app.get("/api/articles?sort_by=value&order=value", getArticles)
-
-app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
-
-app.get("/api/articles/:article_id/?comment_count", getArticlesById)
-
-app.post("/api/articles/:article_id/comments", postCommentsByArticleId)
-
-app.patch("/api/articles/:article_id", patchArticleById)
-
-app.delete("/api/comments/:comment_id", deleteCommentById)
-
-app.get("/api/users", getUsers)
+app.use("/api/users", usersRouter)
 
 app.use(handlePsqlErrors);
 
