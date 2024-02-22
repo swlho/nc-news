@@ -67,7 +67,7 @@
       ]
     }
   },
-  "GET /api/articles/:article_id?comments": {
+  "GET /api/articles/:article_id?comment_count": {
     "description": "query that serves a total count of all the comments with the requested article_id",
     "queries": ["article_id"],
     "exampleResponse":{
