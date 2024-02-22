@@ -5,16 +5,23 @@ const {
 	selectArticlesById,
 	selectCommentsByArticleId,
 	addCommentByArticleId,
-	updateArticleVotes
+	updateArticleVotes,
+	selectArticlesByColumn
 } = require(`${__dirname}/../models/articles.model.js`);
 
 function getArticles(request, response, next) {
-	const {topic} = request.query
-	const promises = [selectArticles(topic)]
+	const {topic, sort_by, order} = request.query
+	const promises = []
 
-	if(topic){
-		promises.push(selectTopics(topic))
+	if(Object.keys(request.query)[0] === "sort_by"){
+		promises.push(selectArticlesByColumn(sort_by, order))
+	} else {
+		promises.push(selectArticles(topic))
+		if(topic){
+			promises.push(selectTopics(topic))
+		}
 	}
+
 	Promise.all(promises)
 		.then((resolvedPromises) => {
 			response.status(200).send({ articles: resolvedPromises[0] });
@@ -82,4 +89,4 @@ function patchArticleById(request, response, next){
 	})
 }
 
-module.exports = { getArticles, getArticlesById, getCommentsByArticleId, postCommentsByArticleId, patchArticleById };
+module.exports = { getArticles, getArticlesById, getCommentsByArticleId, postCommentsByArticleId, patchArticleById};

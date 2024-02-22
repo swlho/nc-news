@@ -276,6 +276,63 @@ describe("/api/articles", () => {
 			});
 		})
 	})
+	describe('GET /api/articles?sort_by=value&order=value', () => {
+		test('STATUS 200: Should return articles sorted by created_at in descending order', () => {
+			return request(app)
+			.get("/api/articles?sort_by")
+			.expect(200)
+			.then(({body}) => {
+				const articles = body.articles;
+				expect(articles.length).toBe(13)
+				expect(articles).toBeSortedBy("created_at", { descending: true });
+			});
+		})
+		test('STATUS 200: Should return articles sorted by any other valid column (other than created_at) in descending order', () => {
+			return request(app)
+			.get("/api/articles?sort_by=title")
+			.then(({body}) => {
+				const articles = body.articles;
+				expect(articles.length).toBe(13)
+				expect(articles).toBeSortedBy("title", { descending: true });
+			});
+		})
+		test('STATUS 200: /api/articles?sort_by=author&order=asc should return articles sorted by author in ascending order', () => {
+			return request(app)
+			.get("/api/articles?sort_by=author&order=asc")
+			.then(({body}) => {
+				const articles = body.articles;
+				expect(articles.length).toBe(13)
+				expect(articles).toBeSortedBy("author");
+			});
+		})
+		test("STATUS 400 - responds with an error if request is received to sort by a valid column but an invalid order value", () => {
+			return request(app)
+				.get("/api/articles?sort_by=author&order=upwards")
+				.expect(400)
+				.then((response) => {
+					const error = response.body;
+					expect(error.msg).toBe("bad request");
+				});
+		});
+		test("STATUS 400 - responds with an error if request is received to sort by an invalid column", () => {
+			return request(app)
+				.get("/api/articles?sort_by=forklift")
+				.expect(400)
+				.then((response) => {
+					const error = response.body;
+					expect(error.msg).toBe("bad request");
+				});
+		});
+		test("STATUS 400 - responds with an error if request is received to sort an invalid column by ascending order", () => {
+			return request(app)
+				.get("/api/articles?sort_by=forklift&order=asc")
+				.expect(400)
+				.then((response) => {
+					const error = response.body;
+					expect(error.msg).toBe("bad request");
+				});
+		});
+	})
 	describe("POST /api/articles/:article_id/comments", () => {
 		test("STATUS 201: adds a comment for an article and responds to client with the added comment", () => {
 			const newComment = {
