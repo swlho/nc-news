@@ -6,6 +6,17 @@ https://nc-news-836l.onrender.com/api
 ## Project summary
 An API for the purpose of accessing application data programmatically. The intention here is to mimic the building of a real world backend service (such as Reddit) which should provide this information to the front end architecture.
 
+## Project learning outcomes:
+
+1. Setting up and querying a PostgreSQL database.
+2. Using a Test Driven Development approach to cover both the happy and error paths.
+3. Setting a RESTful API with a number of endpoints which cover CRUD operations.
+4. Setting up parametric endpoints.
+5. Handling complex queries.
+6. Manipulating data to respond to client requirements.
+7. Using Express routing to handle client requests.
+8. Hosting the server and database via ElephantSQL and Render.
+
 ## Instructions for hosting locally
 
 #### Link to Github repo for cloning locally
