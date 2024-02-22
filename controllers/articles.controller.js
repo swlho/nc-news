@@ -27,6 +27,7 @@ function getArticles(request, response, next) {
 function getArticlesById(request, response, next) {
 	const { id } = request.params;
 	const queryField = request.query
+
 	selectArticlesById(id, queryField)
 		.then((article) => {
 			response.status(200).send({ article });
