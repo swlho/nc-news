@@ -18,4 +18,19 @@ function selectTopics(topic=null){
     })
 }
 
-module.exports = {selectTopics}
+function addTopic(postBody){
+    const {slug, description} = postBody
+    const sqlQueryStr = `
+    INSERT INTO topics (slug, description)
+    VALUES ($1,$2)
+    RETURNING *;`
+
+    const queryVals = [slug, description]
+
+    return db.query(sqlQueryStr,queryVals)
+    .then(({rows})=>{
+        return rows[0]
+    })
+}
+
+module.exports = {selectTopics , addTopic}

@@ -128,7 +128,7 @@ function updateArticleVotes(updateVotesValue, article_id){
 
 function addArticle(postBody){
     const {author, title, body, topic, article_img_url} = postBody
-    let sqlQueryStr = `
+    const sqlQueryStr = `
     INSERT INTO articles (author, title, body, topic, article_img_url)
     VALUES ($1,$2,$3,$4,$5);`
 
