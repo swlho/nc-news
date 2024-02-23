@@ -83,6 +83,75 @@ describe("/api/articles", () => {
 				});
 		});
 	});
+	describe('POST /api/articles', () => {
+		test('STATUS 201: Should add a new article and responds with the added article', () => {
+			return request(app)
+			.post("/api/articles")
+			.send({
+				author: 'rogersop',
+				title:'how to code for cats',
+				body:'like this',
+				topic:'cats',
+				article_img_url:'https://images.pexels.com/photos/577585/pexels-photo-577585.jpeg'
+			})
+			.expect(201)
+			.then(({body})=>{
+				expect(body.article).toMatchObject({
+					article_id: 14,
+					author: 'rogersop',
+					title:'how to code for cats',
+					body:'like this',
+					topic:'cats',
+					article_img_url:'https://images.pexels.com/photos/577585/pexels-photo-577585.jpeg',
+					created_at: expect.any(String),
+					votes: 0,
+					comment_count: 0
+				})
+			})
+		})
+		test("STATUS 400: sends an error if trying to post an article with malformed data", () => {
+			return request(app)
+			.post("/api/articles")
+			.send({
+				title:'how to code for cats',
+				article_img_url:'https://images.pexels.com/photos/577585/pexels-photo-577585.jpeg'
+			})
+			.expect(400)
+			.then((response) => {
+				expect(response.body.msg).toBe("bad request");
+			});
+		});
+		test("STATUS 400: sends an error if trying to post an article where author does not exist", () => {
+			return request(app)
+			.post("/api/articles")
+			.send({
+				author: 'some_user',
+				title:'how to code for cats',
+				body:'like this',
+				topic:'cats',
+				article_img_url:'https://images.pexels.com/photos/577585/pexels-photo-577585.jpeg'
+			})
+			.expect(400)
+			.then((response) => {
+				expect(response.body.msg).toBe("bad request");
+			});
+		});
+		test("STATUS 400: sends an error if trying to post an article where topic does not exist", () => {
+			return request(app)
+			.post("/api/articles")
+			.send({
+				author: 'rogersop',
+				title:'how to code for cats',
+				body:'like this',
+				topic:'some topic',
+				article_img_url:'https://images.pexels.com/photos/577585/pexels-photo-577585.jpeg'
+			})
+			.expect(400)
+			.then((response) => {
+				expect(response.body.msg).toBe("bad request");
+			});
+		});
+	})
 	describe("GET /api/articles/:article_id", () => {
 		test("STATUS 200: Responds with the requested article object by ID with the following properties: author, title, article_id, body, topic, created_at, votes, article_img_url", () => {
 			return request(app)
