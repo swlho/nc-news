@@ -13,11 +13,11 @@ const {
 } = require(`${__dirname}/../models/articles.model.js`);
 
 function getArticles(request, response, next) {
-	const {topic, sort_by, order} = request.query
+	let {topic, sort_by, order, limit, p} = request.query
 	const promises = []
 
-	if(Object.keys(request.query)[0] === "sort_by"){
-		promises.push(selectArticlesByColumn(sort_by, order))
+	if(Object.keys(request.query).includes("sort_by") || Object.keys(request.query).includes("limit")){
+		promises.push(selectArticlesByColumn(sort_by, order, limit, p))
 	} else {
 		promises.push(selectArticles(topic))
 		if(topic){

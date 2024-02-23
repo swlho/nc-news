@@ -110,7 +110,97 @@ describe("/api/articles", () => {
 					});
 				});
 		});
-	});
+		describe("GET /api/articles?limit=value&p=value", () => {
+			test("STATUS 200: Responds with an array of articles limited to default 10 results on 1 page", () => {
+				return request(app)
+					.get("/api/articles?limit=10&p=1")
+					.expect(200)
+					.then(({ body: { articles } }) => {
+						expect(articles.length).toBe(10);
+						expect(articles).toBeSorted("created_at", { descending: true });
+						articles.forEach((article) => {
+							expect(article).toMatchObject({
+								author: expect.any(String),
+								title: expect.any(String),
+								article_id: expect.any(Number),
+								topic: expect.any(String),
+								created_at: expect.any(String),
+								votes: expect.any(Number),
+								article_img_url: expect.any(String),
+								comment_count: expect.any(Number),
+							});
+							expect(article).not.toHaveProperty("body");
+						});
+					});
+			});
+			test("STATUS 200: Responds with an array of articles limited to default 10 results on the second page", () => {
+				return request(app)
+					.get("/api/articles?limit=10&p=2")
+					.expect(200)
+					.then(({ body: { articles } }) => {
+						expect(articles.length).toBe(3);
+						expect(articles).toBeSorted("created_at", { descending: true });
+						articles.forEach((article) => {
+							expect(article).toMatchObject({
+								author: expect.any(String),
+								title: expect.any(String),
+								article_id: expect.any(Number),
+								topic: expect.any(String),
+								created_at: expect.any(String),
+								votes: expect.any(Number),
+								article_img_url: expect.any(String),
+								comment_count: expect.any(Number),
+							});
+							expect(article).not.toHaveProperty("body");
+						});
+					});
+			});
+			test("STATUS 200: Responds with an array of articles limited to 5 results on 1 page", () => {
+				return request(app)
+					.get("/api/articles?limit=5&p=1")
+					.expect(200)
+					.then(({ body: { articles } }) => {
+						expect(articles.length).toBe(5);
+						expect(articles).toBeSorted("created_at", { descending: true });
+						articles.forEach((article) => {
+							expect(article).toMatchObject({
+								author: expect.any(String),
+								title: expect.any(String),
+								article_id: expect.any(Number),
+								topic: expect.any(String),
+								created_at: expect.any(String),
+								votes: expect.any(Number),
+								article_img_url: expect.any(String),
+								comment_count: expect.any(Number),
+							});
+							expect(article).not.toHaveProperty("body");
+						});
+					});
+			});
+			test("STATUS 200: Responds with an array of articles limited to 5 results on the second page", () => {
+				return request(app)
+					.get("/api/articles?limit=5&p=2")
+					.expect(200)
+					.then(({ body: { articles } }) => {
+						expect(articles.length).toBe(5);
+						expect(articles).toBeSorted("created_at", { descending: true });
+						articles.forEach((article) => {
+							expect(article).toMatchObject({
+								author: expect.any(String),
+								title: expect.any(String),
+								article_id: expect.any(Number),
+								topic: expect.any(String),
+								created_at: expect.any(String),
+								votes: expect.any(Number),
+								article_img_url: expect.any(String),
+								comment_count: expect.any(Number),
+							});
+							expect(article).not.toHaveProperty("body");
+						});
+					});
+			});
+		})
+	})	
 	describe('POST /api/articles', () => {
 		test('STATUS 201: Should add a new article and responds with the added article', () => {
 			return request(app)
