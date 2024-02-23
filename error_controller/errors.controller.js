@@ -18,5 +18,5 @@ exports.handleServerErrors = ((err, request, response, next) => {
 });
 
 exports.handleInvalidEndpoints = ((request, response)=>{
-    response.status(404).send({msg:"Not found"})
+    response.status(404).send({msg:"not found"})
 })

@@ -34,7 +34,7 @@ describe("/api", () => {
 				.get("/aip")
 				.expect(404)
 				.then((err) => {
-					expect(err.body.msg).toBe("Not found");
+					expect(err.body.msg).toBe("not found");
 				});
 		});
 	});
@@ -473,6 +473,30 @@ describe('/api/users', () => {
 				});
 		});
 	})
+	describe('GET /api/users/:username', () => {
+		test('STATUS 200: Responds with a user requesed by username', () => {
+			return request(app)
+			.get("/api/users/rogersop")
+			.expect(200)
+			.then(({body})=>{
+				const user = body.user
+				expect(user).toMatchObject({
+					username: 'rogersop',
+					name: 'paul',
+					avatar_url: 'https://avatars2.githubusercontent.com/u/24394918?s=400&v=4'
+				})
+			})
+		})
+	})
+	test('STATUS 404: Responds with error if no such username exists', () => {
+		return request(app)
+		.get("/api/username/not_a_username")
+		.expect(404)
+		.then((response) => {
+			const error = response.body;
+			expect(error.msg).toBe("not found");
+		});
+	})
 })
 
 describe("/api/not_a_valid_endpoint", () => {
@@ -482,7 +506,7 @@ describe("/api/not_a_valid_endpoint", () => {
 				.get("/api/not_a_valid_endpoint")
 				.expect(404)
 				.then((response) => {
-					expect(response.body.msg).toBe("Not found");
+					expect(response.body.msg).toBe("not found");
 				});
 		});
 	});

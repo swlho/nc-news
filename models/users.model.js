@@ -1,11 +1,21 @@
 const db = require(`${__dirname}/../db/connection.js`)
 
 function selectAllUsers(){
-	const sqlQueryStr = `SELECT * FROM users;
-        `;
+	
+	let sqlQueryStr = `SELECT * FROM users`
+
 	return db.query(sqlQueryStr).then((result) => {
 		return result.rows;
 	});
 }
 
-module.exports = {selectAllUsers}
+function selectUserByUsername(username){
+	
+	let sqlQueryStr = `SELECT * FROM users WHERE username = '${username}'`
+
+	return db.query(sqlQueryStr).then((result) => {
+		return result.rows[0];
+	});
+}
+
+module.exports = {selectAllUsers, selectUserByUsername}
