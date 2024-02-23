@@ -1,5 +1,5 @@
 const {
-	removeCommentById
+	removeCommentById, updateCommentById
 } = require(`${__dirname}/../models/comments.model.js`);
 
 function deleteCommentById(request, response, next){
@@ -13,4 +13,16 @@ function deleteCommentById(request, response, next){
     })
 }
 
-module.exports = {deleteCommentById}
+function patchCommentById(request, response, next){
+    const {comment_id} = request.params
+    const updateVotesValue = request.body
+    updateCommentById(updateVotesValue, comment_id)
+    .then((patchedComment)=>{
+		response.status(200).send({comment:patchedComment})
+	})
+	.catch((err)=>{
+		next(err)
+	})
+}
+
+module.exports = {deleteCommentById, patchCommentById}

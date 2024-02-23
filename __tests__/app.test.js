@@ -428,29 +428,74 @@ describe("/api/articles", () => {
 });
 
 describe('/api/comments', () => {
-	describe('DELETE /api/comments/:comment_id', () => { 
-		test('STATUS 204: Deletes comment by comment_id', () => {
-			return request(app)
-			.delete("/api/comments/1")
-			.expect(204)
+	describe('/api/comments/:comment_id', () => {
+		describe('DELETE /api/comments/:comment_id', () => { 
+			test('STATUS 204: Deletes comment by comment_id', () => {
+				return request(app)
+				.delete("/api/comments/1")
+				.expect(204)
+			})
+			test('STATUS 404: Responds with error if no such comment_id exists', () => {
+				return request(app)
+				.delete("/api/comments/899456")
+				.expect(404)
+				.then((response) => {
+					const error = response.body;
+					expect(error.msg).toBe("not found");
+				});
+			})
+			test('STATUS 400: Responds with error if comment_id is invalid datatype', () => {
+				return request(app)
+				.delete("/api/comments/forklift")
+				.expect(400)
+				.then((response) => {
+					const error = response.body;
+					expect(error.msg).toBe("bad request");
+				});
+			})
 		})
-		test('STATUS 404: Responds with error if no such comment_id exists', () => {
-			return request(app)
-			.delete("/api/comments/899456")
-			.expect(404)
-			.then((response) => {
-				const error = response.body;
-				expect(error.msg).toBe("not found");
-			});
-		})
-		test('STATUS 400: Responds with error if comment_id is invalid datatype', () => {
-			return request(app)
-			.delete("/api/comments/forklift")
-			.expect(400)
-			.then((response) => {
-				const error = response.body;
-				expect(error.msg).toBe("bad request");
-			});
+		describe('PATCH /api/comments/:comment_id', () => {
+			test('Updates the votes by plus 1 on a comment for the given comment_id', () => {
+				return request(app)
+				.patch("/api/comments/1")
+				.send({inc_votes:1})
+				.expect(200)
+				.then(({ body }) => {
+					expect(body.comment).toMatchObject({
+						comment_id:1,
+						body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+						votes: 17,
+						author: "butter_bridge",
+						article_id: 9,
+						created_at: expect.any(String)
+					});
+				});
+			})
+			test('Updates the votes by minus 1 on a comment for the given comment_id', () => {
+				return request(app)
+				.patch("/api/comments/1")
+				.send({inc_votes:-1})
+				.expect(200)
+				.then(({ body }) => {
+					expect(body.comment).toMatchObject({
+						comment_id:1,
+						body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+						votes: 15,
+						author: "butter_bridge",
+						article_id: 9,
+						created_at: expect.any(String)
+					});
+				});
+			})
+			test('STATUS 400: sends an appropriate status and error message when given a PATCH body not meeting validation schema', () => {
+				return request(app)
+					.patch("/api/comments/1")
+					.send({ inc_votes: "one hundred" })
+					.expect(400)
+					.then((response) => {
+						expect(response.body.msg).toBe("bad request");
+					});
+			})
 		})
 	})
 })
