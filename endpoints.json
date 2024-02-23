@@ -9,6 +9,17 @@
       "topics": [{ "slug": "football", "description": "Footie!" }]
     }
   },
+  "POST /api/topics": {
+    "description": "posts a new topic and returns the posted topic",
+    "exampleResponse": {
+      "topic": [
+        {
+          "description":"how to code",
+          "slug":"coding"
+        }
+      ]
+    }
+  },
   "GET /api/articles": {
     "description": "serves an array of all articles",
     "queries": ["author", "topic", "sort_by", "order"],
@@ -65,6 +76,26 @@
       ]
     }
   },
+  "PATCH /api/articles/:article_id": {
+    "description": "Updates a given article's votes by the value provided by newVote in the passed object {inc_votes: newVote}",
+    "queries": ["article_id"],
+    "exampleResponse":{
+      "article": [
+        {
+          "comment_id": 19,
+          "body": "This is a test comment",
+          "votes": 0,
+          "author": "butter_bridge",
+          "created_at": "2020-09-03T01:06:00.000Z",
+          "article_id": 3
+        }
+      ]
+    }
+  },
+  "DELETE /api/articles/:article_id": {
+    "description": "Deletes carticle by article_id and all associated comments",
+    "queries": ["article_id"]
+  },
   "GET /api/articles/:article_id/comments": {
     "description": "serves an array of article comments requested by article ID, sorted by most recent first",
     "queries": ["article_id"],
@@ -116,20 +147,19 @@
       ]
     }
   },
-  "PATCH /api/articles/:article_id": {
-    "description": "Updates a given article's votes by the value provided by newVote in the passed object {inc_votes: newVote}",
-    "queries": ["article_id"],
-    "exampleResponse":{
-      "article": [
-        {
-          "comment_id": 19,
-          "body": "This is a test comment",
-          "votes": 0,
-          "author": "butter_bridge",
-          "created_at": "2020-09-03T01:06:00.000Z",
-          "article_id": 3
-        }
-      ]
+  "GET /api/articles?topic": {
+    "description": "serves an array of articles filtered by topic",
+    "queries": ["topic"],
+    "exampleResponse": {
+      "articles": [{
+        "title": "UNCOVERED: catspiracy to bring down democracy",
+        "topic": "cats",
+        "author": "rogersop",
+        "body": "Bastet walks amongst us, and the cats are taking arms!",
+        "created_at": "2020-09-03T01:06:00.000Z",
+        "article_img_url":
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+      }]
     }
   },
   "DELETE /api/comments/:comment_id": {
@@ -149,21 +179,6 @@
         "name": "Tom Tickle",
         "avatar_url":
           "https://vignette.wikia.nocookie.net/mrmen/images/d/d6/Mr-Tickle-9a.png/revision/latest?cb=20180127221953"
-      }]
-    }
-  },
-  "GET /api/articles?topic": {
-    "description": "serves an array of articles filtered by topic",
-    "queries": ["topic"],
-    "exampleResponse": {
-      "articles": [{
-        "title": "UNCOVERED: catspiracy to bring down democracy",
-        "topic": "cats",
-        "author": "rogersop",
-        "body": "Bastet walks amongst us, and the cats are taking arms!",
-        "created_at": "2020-09-03T01:06:00.000Z",
-        "article_img_url":
-          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
       }]
     }
   },
