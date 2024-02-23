@@ -82,7 +82,7 @@ function selectArticlesById(id = null, queryField=null) {
 	});
 }
 
-function selectCommentsByArticleId(id = null) {
+function selectCommentsByArticleId(id = null, limit=null, p=null) {
 	let sqlQueryStr = `SELECT * FROM comments`;
 	const queryVals = [];
 
@@ -92,6 +92,14 @@ function selectCommentsByArticleId(id = null) {
 	}
 
 	sqlQueryStr += " ORDER BY created_at DESC";
+
+    if(limit!==null){
+        sqlQueryStr += ` LIMIT ${limit}`
+    }
+
+    if(p!==null && p > 1){
+        sqlQueryStr += ` OFFSET ${limit}`
+    }
 
 	return db.query(sqlQueryStr, queryVals).then((result) => {
 		if (result.rows.length === 1) {

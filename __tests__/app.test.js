@@ -402,6 +402,77 @@ describe("/api/articles", () => {
 			});
 		});
 	});
+	describe("GET /api/articles/:article_id/comments?limit=value&p=value", () => {
+		test("STATUS 200: Responds with an array of comments associated with given article_id limited to default 10 results on 1 page", () => {
+			return request(app)
+				.get("/api/articles/1/comments?limit=10&p=1")
+				.expect(200)
+				.then(({ body }) => {
+					const comments = body.comments;
+					expect(comments.length).toBe(10)
+					expect(comments).toBeSortedBy("created_at", { descending: true });
+					comments.forEach((comment) => {
+						expect(comment).toMatchObject({
+							comment_id: expect.any(Number),
+							votes: expect.any(Number),
+							created_at: expect.any(String),
+							author: expect.any(String),
+							body: expect.any(String),
+							article_id: 1
+						});
+					});
+				});
+		});
+		test("STATUS 200: Responds with an array of comments associated with given article_id limited to default 10 results on the second page", () => {
+			return request(app)
+				.get("/api/articles/1/comments?limit=10&p=2")
+				.expect(200)
+				.then(({ body }) => {
+					const comments = [body.comments];
+					expect(comments.length).toBe(1)
+				});
+		});
+		test("STATUS 200: Responds with an array of comments associated with given article_id limited to 5 results on 1 page", () => {
+			return request(app)
+				.get("/api/articles/1/comments?limit=5&p=1")
+				.expect(200)
+				.then(({ body }) => {
+					const comments = body.comments;
+					expect(comments.length).toBe(5)
+					expect(comments).toBeSortedBy("created_at", { descending: true });
+					comments.forEach((comment) => {
+						expect(comment).toMatchObject({
+							comment_id: expect.any(Number),
+							votes: expect.any(Number),
+							created_at: expect.any(String),
+							author: expect.any(String),
+							body: expect.any(String),
+							article_id: 1
+						});
+					});
+				});
+		});
+		test("STATUS 200: Responds with an array of comments associated with given article_id limited to 5 results on the second page", () => {
+			return request(app)
+				.get("/api/articles/1/comments?limit=5&p=1")
+				.expect(200)
+				.then(({ body }) => {
+					const comments = body.comments;
+					expect(comments.length).toBe(5)
+					expect(comments).toBeSortedBy("created_at", { descending: true });
+					comments.forEach((comment) => {
+						expect(comment).toMatchObject({
+							comment_id: expect.any(Number),
+							votes: expect.any(Number),
+							created_at: expect.any(String),
+							author: expect.any(String),
+							body: expect.any(String),
+							article_id: 1
+						});
+					});
+				});
+		});
+	})
 	describe('GET /api/articles/:article_id?comment_count', () => {
 		test("STATUS 200: Responds with article's comment_count, which is the total count of all the comments with this article_id", () => {
 			return request(app)

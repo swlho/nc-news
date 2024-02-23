@@ -49,7 +49,8 @@ function getArticlesById(request, response, next) {
 
 function getCommentsByArticleId(request, response, next) {
 	const { article_id } = request.params;
-	const promises = [selectCommentsByArticleId(article_id)];
+	let { limit, p } = request.query;
+	const promises = [selectCommentsByArticleId(article_id, limit, p)];
 
 	if (article_id) {
 		promises.push(selectArticlesById(article_id));
