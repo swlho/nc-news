@@ -36,6 +36,10 @@ articlesRouter
 .get(getArticles)
 
 articlesRouter
+.route("/articles?limit=value&p=value")
+.get(getArticles)
+
+articlesRouter
 .route("/:article_id/comments")
 .post(postCommentsByArticleId)
 

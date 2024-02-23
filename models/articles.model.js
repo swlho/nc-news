@@ -17,24 +17,32 @@ function selectArticles(topic=null) {
 	});
 }
 
-function selectArticlesByColumn(sort_by, order='desc') {
+function selectArticlesByColumn(sort_by=null, order='desc', limit=null, p=null) {
     const validSortByColumns = ["author","title","article_id,","topic","created_at","votes","comment_count"]
 
-    if(Object.keys(sort_by).length===0){
+    if(sort_by === null || sort_by.length ===0){
         sort_by = 'created_at'
     }
-
+    
     if (!validSortByColumns.includes(sort_by)) {
         return Promise.reject({ status: 400, msg: "bad request" });
     }
-
+    
     if (!["asc", "desc"].includes(order)) {
-		return Promise.reject({ status: 400, msg: "bad request" });
+        return Promise.reject({ status: 400, msg: "bad request" });
 	}
     
 	let sqlQueryStr = "SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, CAST(COUNT(comments.comment_id) AS INT) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id"
     
     sqlQueryStr += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`
+    
+    if(limit!==null){
+        sqlQueryStr += ` LIMIT ${limit}`
+    }
+
+    if(p!==null && p > 1){
+        sqlQueryStr += ` OFFSET ${limit}`
+    }
 
 	return db.query(sqlQueryStr).then((result) => {
 		return result.rows;
