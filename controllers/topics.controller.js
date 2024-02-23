@@ -1,6 +1,6 @@
 const {
 	selectTopics,
-	selectEndpoints
+	addTopic
 } = require(`${__dirname}/../models/topics.model.js`);
 
 function getTopics(request, response, next) {
@@ -13,4 +13,15 @@ function getTopics(request, response, next) {
 		});
 }
 
-module.exports = { getTopics };
+function postTopic(request, response, next){
+	const postBody = request.body
+	addTopic(postBody)
+	.then((postedTopic)=>{
+		response.status(201).send({topic: postedTopic})
+	})
+	.catch((err)=>{
+		next(err)
+	})
+}
+
+module.exports = { getTopics , postTopic };

@@ -56,6 +56,34 @@ describe("/api/topics", () => {
 				});
 		});
 	});
+	describe('POST /api/topics', () => {
+		test('STATUS 201: Should add a new topic and responds with the added topic', () => {
+			return request(app)
+			.post("/api/topics")
+			.send({
+				description: 'coding for coders',
+				slug: 'coding'
+			})
+			.expect(201)
+			.then(({body})=>{
+				expect(body.topic).toMatchObject({
+					description: 'coding for coders',
+					slug: 'coding'
+				})
+			})
+		})
+		test("STATUS 400: sends an error if trying to post a topic with malformed data", () => {
+			return request(app)
+			.post("/api/topics")
+			.send({
+				description: 'coding for coders',
+			})
+			.expect(400)
+			.then((response) => {
+				expect(response.body.msg).toBe("bad request");
+			});
+		});
+	})
 });
 
 describe("/api/articles", () => {
@@ -524,7 +552,7 @@ describe('/api/comments', () => {
 			})
 		})
 		describe('PATCH /api/comments/:comment_id', () => {
-			test('Updates the votes by plus 1 on a comment for the given comment_id', () => {
+			test('STATUS 200: Updates the votes by plus 1 on a comment for the given comment_id', () => {
 				return request(app)
 				.patch("/api/comments/1")
 				.send({inc_votes:1})
@@ -540,7 +568,7 @@ describe('/api/comments', () => {
 					});
 				});
 			})
-			test('Updates the votes by minus 1 on a comment for the given comment_id', () => {
+			test('STATUS 200: Updates the votes by minus 1 on a comment for the given comment_id', () => {
 				return request(app)
 				.patch("/api/comments/1")
 				.send({inc_votes:-1})
