@@ -218,6 +218,36 @@ describe("/api/articles", () => {
 				});
 		});
 	});
+	describe('DELETE /api/articles/:article_id', () => {
+		test('STATUS 204: Should delete an article based on article_id and its respective comments', () => {
+			return request(app)
+			.delete("/api/articles/1")
+			.expect(204)
+		})
+		test('STATUS 204: Should delete an article based on article_id even if no associated comments exist', () => {
+			return request(app)
+			.delete("/api/articles/7")
+			.expect(204)
+		})
+		test('STATUS 404: Responds with error if no such article_id exists', () => {
+			return request(app)
+			.delete("/api/articles/99")
+			.expect(404)
+			.then((response) => {
+				const error = response.body;
+				expect(error.msg).toBe("not found");
+			});
+		})
+		test('STATUS 400: Responds with error if article_id is invalid datatype', () => {
+			return request(app)
+			.delete("/api/articles/forklift")
+			.expect(400)
+			.then((response) => {
+				const error = response.body;
+				expect(error.msg).toBe("bad request");
+			});
+		})
+	})
 	describe("GET /api/articles/:article_id/comments", () => {
 		test("STATUS 200: Responds with an array of comments for the given article_id, sorted by most recent comment first", () => {
 			return request(app)

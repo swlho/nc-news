@@ -7,7 +7,9 @@ const {
 	addCommentByArticleId,
 	updateArticleVotes,
 	selectArticlesByColumn,
-	addArticle
+	addArticle, 
+	removeArticleById, 
+	removeCommentsByArticleId
 } = require(`${__dirname}/../models/articles.model.js`);
 
 function getArticles(request, response, next) {
@@ -33,10 +35,10 @@ function getArticles(request, response, next) {
 }
 
 function getArticlesById(request, response, next) {
-	const { id } = request.params;
+	const { article_id } = request.params;
 	const queryField = request.query
 
-	selectArticlesById(id, queryField)
+	selectArticlesById(article_id, queryField)
 		.then((article) => {
 			response.status(200).send({ article });
 		})
@@ -101,4 +103,18 @@ function postArticle(request, response, next){
 	})
 }
 
-module.exports = { getArticles, getArticlesById, getCommentsByArticleId, postCommentsByArticleId, patchArticleById, postArticle};
+function deleteArticleById(request, response, next){
+	const {article_id} = request.params
+	removeCommentsByArticleId(article_id)
+	.then(()=>{
+		return removeArticleById(article_id)
+	})
+	.then(({body})=>{
+        response.status(204).send(`Deleted: ${body}`)
+    })
+    .catch((err)=>{
+        next(err)
+    })
+}
+
+module.exports = { getArticles, getArticlesById, getCommentsByArticleId, postCommentsByArticleId, patchArticleById, postArticle, deleteArticleById};
