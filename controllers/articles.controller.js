@@ -6,7 +6,8 @@ const {
 	selectCommentsByArticleId,
 	addCommentByArticleId,
 	updateArticleVotes,
-	selectArticlesByColumn
+	selectArticlesByColumn,
+	addArticle
 } = require(`${__dirname}/../models/articles.model.js`);
 
 function getArticles(request, response, next) {
@@ -89,4 +90,15 @@ function patchArticleById(request, response, next){
 	})
 }
 
-module.exports = { getArticles, getArticlesById, getCommentsByArticleId, postCommentsByArticleId, patchArticleById};
+function postArticle(request, response, next){
+	const postBody = request.body
+	addArticle(postBody)
+	.then((postedArticle)=>{
+		response.status(201).send({article: postedArticle})
+	})
+	.catch((err)=>{
+		next(err)
+	})
+}
+
+module.exports = { getArticles, getArticlesById, getCommentsByArticleId, postCommentsByArticleId, patchArticleById, postArticle};

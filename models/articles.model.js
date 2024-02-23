@@ -126,11 +126,34 @@ function updateArticleVotes(updateVotesValue, article_id){
     })
 }
 
+function addArticle(postBody){
+    const {author, title, body, topic, article_img_url} = postBody
+    let sqlQueryStr = `
+    INSERT INTO articles (author, title, body, topic, article_img_url)
+    VALUES ($1,$2,$3,$4,$5);`
+
+    const queryVals = [author, title, body, topic, article_img_url]
+    return db.query(sqlQueryStr, queryVals)
+    .then(()=>{
+    const sqlQueryStrSelect = `
+    SELECT articles.article_id, articles.author, title, articles.body, topic, article_img_url, articles.created_at, articles.votes, CAST(COUNT(comments.comment_id) AS INT) AS comment_count FROM articles
+    LEFT JOIN comments ON articles.article_id = comments.article_id
+    GROUP BY articles.article_id
+    ORDER BY articles.article_id DESC
+    LIMIT 1;`
+    return db.query(sqlQueryStrSelect)
+    })
+    .then(({rows})=>{
+        return rows[0]
+    })
+}
+
 module.exports = {
 	selectArticles,
 	selectArticlesById,
 	selectCommentsByArticleId,
     addCommentByArticleId,
     updateArticleVotes,
-    selectArticlesByColumn
+    selectArticlesByColumn,
+    addArticle
 };

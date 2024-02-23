@@ -4,12 +4,14 @@ const {
 	getArticlesById,
 	getCommentsByArticleId,
     postCommentsByArticleId,
-    patchArticleById
+    patchArticleById,
+	postArticle
 } = require(`${__dirname}/../controllers/articles.controller.js`);
 
 articlesRouter
 .route("/")
-.get(getArticles);
+.get(getArticles)
+.post(postArticle);
 
 articlesRouter
 .route("/:id")
