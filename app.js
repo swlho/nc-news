@@ -5,6 +5,7 @@ const topicsRouter = require(`${__dirname}/./routes/topics.router.js`);
 const articlesRouter = require(`${__dirname}/./routes/articles.router.js`);
 const commentsRouter = require(`${__dirname}/./routes/comments.router.js`);
 const usersRouter = require(`${__dirname}/./routes/users.router.js`);
+const cors = require('cors')
 
 const {
 	handlePsqlErrors,
@@ -12,6 +13,8 @@ const {
 	handleServerErrors,
 	handleInvalidEndpoints,
 } = require(`${__dirname}/error_controller/errors.controller.js`);
+
+app.use(cors());
 
 app.use(express.json())
 
