@@ -49,6 +49,26 @@ function selectArticlesByColumn(sort_by=null, order='desc', limit=null, p=null) 
 	});
 }
 
+function selectArticlesByTopicQueried(topic, sort_by, order='asc'){
+    const validSortByColumns = ["topic","created_at","votes","comment_count"]
+
+    if (!validSortByColumns.includes(sort_by)) {
+        return Promise.reject({ status: 400, msg: "bad request" });
+    }
+    
+    if (!["asc", "desc"].includes(order)) {
+        return Promise.reject({ status: 400, msg: "bad request" });
+	}
+    
+	let sqlQueryStr = `SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, CAST(COUNT(comments.comment_id) AS INT) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id WHERE topic='${topic}'`
+    
+    sqlQueryStr += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order};`
+
+	return db.query(sqlQueryStr).then((result) => {
+		return result.rows;
+	});
+}
+
 function selectArticlesById(id = null, queryField=null) {
 	const queryVals = [];
     const validQueryFields = ['comment_count']
@@ -201,5 +221,6 @@ module.exports = {
     selectArticlesByColumn,
     addArticle,
     removeArticleById,
-    removeCommentsByArticleId
+    removeCommentsByArticleId,
+    selectArticlesByTopicQueried
 };
