@@ -564,6 +564,61 @@ describe("/api/articles", () => {
 			});
 		})
 	})
+
+	describe('GET /api/articles?topic=value&sort_by=value&order=value', () => { 
+		test('STATUS 200: Should return articles by queried topic', () => {
+			return request(app)
+			.get("/api/articles?topic=mitch")
+			.expect(200)
+			.then(({body}) => {
+				const articles = body.articles
+				expect(articles.length).toBe(12)
+				articles.forEach((article)=>{
+					expect(article.topic).toBe("mitch")
+				})
+			});
+		})
+		test('STATUS 200: Should return articles by queried topic and sorted by created_at in ascending order', () => {
+			return request(app)
+			.get("/api/articles?topic=mitch&sort_by=created_at&order=asc")
+			.expect(200)
+			.then(({body}) => {
+				const articles = body.articles
+				expect(articles.length).toBe(12)
+				articles.forEach((article)=>{
+					expect(article.topic).toBe("mitch")
+					expect(articles).toBeSortedBy("created_at");
+				})
+			});
+		})
+		test('STATUS 200: Should return articles by queried topic and sorted by created_at in descending order', () => {
+			return request(app)
+			.get("/api/articles?topic=mitch&sort_by=created_at&order=desc")
+			.expect(200)
+			.then(({body}) => {
+				const articles = body.articles
+				expect(articles.length).toBe(12)
+				articles.forEach((article)=>{
+					expect(article.topic).toBe("mitch")
+					expect(articles).toBeSortedBy("created_at", { descending: true });
+				})
+			});
+		})
+		test('STATUS 200: Should return articles by queried topic and sorted by votes in descending order', () => {
+			return request(app)
+			.get("/api/articles?topic=mitch&sort_by=votes&order=desc")
+			.expect(200)
+			.then(({body}) => {
+				const articles = body.articles
+				expect(articles.length).toBe(12)
+				articles.forEach((article)=>{
+					expect(article.topic).toBe("mitch")
+					expect(articles).toBeSortedBy("votes", { descending: true });
+				})
+			});
+		})
+	})
+
 	describe('GET /api/articles?sort_by=value&order=value', () => {
 		test('STATUS 200: Should return articles sorted by created_at in descending order', () => {
 			return request(app)
