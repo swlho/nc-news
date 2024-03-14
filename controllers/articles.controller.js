@@ -18,10 +18,10 @@ function getArticles(request, response, next) {
 	const promises = []
 
 	if(Object.keys(request.query).includes("sort_by") && Object.keys(request.query).includes("topic") && Object.keys(request.query).includes("order")){
-		getArticlesByTopicQueried(request, response, next)
+		promises.push(selectArticlesByTopicQueried(topic, sort_by, order))
 	}
 
-	if(Object.keys(request.query).includes("sort_by") || Object.keys(request.query).includes("limit")){
+	if(Object.keys(request.query).includes("sort_by") && !Object.keys(request.query).includes("topic") || Object.keys(request.query).includes("limit")){
 		promises.push(selectArticlesByColumn(sort_by, order, limit, p))
 	} else {
 		promises.push(selectArticles(topic))
@@ -37,17 +37,6 @@ function getArticles(request, response, next) {
 		.catch((err) => {
 			next(err);
 		});
-}
-
-function getArticlesByTopicQueried(request, response, next){
-	const {topic, sort_by, order} = request.query
-	selectArticlesByTopicQueried(topic, sort_by, order)
-	.then((articles)=>{
-		response.status(200).send({articles})
-	})
-	.catch((err)=>{
-		next(err)
-	})
 }
 
 function getArticlesById(request, response, next) {
@@ -134,4 +123,4 @@ function deleteArticleById(request, response, next){
     })
 }
 
-module.exports = { getArticles, getArticlesById, getCommentsByArticleId, postCommentsByArticleId, patchArticleById, postArticle, deleteArticleById, getArticlesByTopicQueried};
+module.exports = { getArticles, getArticlesById, getCommentsByArticleId, postCommentsByArticleId, patchArticleById, postArticle, deleteArticleById};
